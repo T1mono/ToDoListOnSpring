@@ -6,5 +6,4 @@ import ru.javadaddy.todolistonspring.model.Task;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
-
 }
