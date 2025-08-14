@@ -1,19 +1,32 @@
 spring:
+  application:
+    name: ToDoListOnSpring
   datasource:
-    url: jdbc:postgresql://localhost:5432/spring_todo
+    url: jdbc:postgresql://localhost:5432/spring_todo?currentSchema=todo
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: SpringTodoPool
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 30000
+      connection-timeout: 30000
+      max-lifetime: 600000
 
   jpa:
-    hibernate:
-      ddl-auto: update
     show-sql: true
+    hibernate:
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
+        default_schema: todo
 
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+server:
+  port: 8080
