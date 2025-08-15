@@ -29,7 +29,7 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * Сортировка задачи по статусу.
-     * @return
+     * @return Возращает отсортированный список задач по статусу.
      */
     @Override
     public List<TaskDto> sortByStatus() {
@@ -44,7 +44,7 @@ public class TaskServiceImpl implements TaskService {
      * Получение списка задач по статусу.
      *
      * @param taskStatus
-     * @return
+     * @return Возвращает отфильтрованный список задач по статусу.
      */
     @Override
     public List<TaskDto> filterByStatus(TaskStatus taskStatus) {
@@ -60,7 +60,7 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param id
      * @param taskDto
-     * @return
+     * @return Возвращает обновлунную задачу.
      */
     @Override
     @Transactional
@@ -109,7 +109,7 @@ public class TaskServiceImpl implements TaskService {
      * Удаление задачи.
      *
      * @param id
-     * @return
+     * @return Взвращает удаленный объект.
      */
     @Override
     @Transactional
@@ -130,7 +130,7 @@ public class TaskServiceImpl implements TaskService {
      * Создание задачи.
      *
      * @param taskDto
-     * @return
+     * @return Возвращает объект созданной задачи.
      */
     @Override
     @Transactional
@@ -158,7 +158,7 @@ public class TaskServiceImpl implements TaskService {
     /**
      * Получить список задач.
      *
-     * @return
+     * @return Возвращает весь список задач.
      */
     @Override
     public List<TaskDto> listAll() {
@@ -176,7 +176,7 @@ public class TaskServiceImpl implements TaskService {
      * Получить задачу по ID.
      *
      * @param id
-     * @return
+     * @return Возращает задачу найденную по ID.
      */
     @Override
     public TaskDto getById(Long id) {
