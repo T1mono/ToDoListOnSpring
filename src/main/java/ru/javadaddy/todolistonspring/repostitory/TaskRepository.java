@@ -12,6 +12,4 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     //Сортировка задачи по статусу
     List<Task> findByTaskStatus(TaskStatus taskStatus);
-
-
 }

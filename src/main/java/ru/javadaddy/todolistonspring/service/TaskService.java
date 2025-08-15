@@ -3,15 +3,18 @@ package ru.javadaddy.todolistonspring.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.MappingException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javadaddy.todolistonspring.dto.TaskDto;
+import ru.javadaddy.todolistonspring.enums.TaskStatus;
 import ru.javadaddy.todolistonspring.exception.TaskNotFoundException;
 import ru.javadaddy.todolistonspring.mapper.TaskMapper;
 import ru.javadaddy.todolistonspring.model.Task;
 import ru.javadaddy.todolistonspring.repostitory.TaskRepository;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +28,39 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
 
+    /**
+     * Сортировка задачи по статусу.
+     * @return
+     */
+    public List<TaskDto> sortByStatus() {
+        List<Task> foundTasks = taskRepository.findAll(Sort.by(Sort.Direction.ASC, "taskStatus"));
+        return foundTasks.stream()
+                .map(task -> taskMapper.toDto(task))
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * Получение списка задач по статусу.
+     *
+     * @param taskStatus
+     * @return
+     */
+    public List<TaskDto> listByStatus(TaskStatus taskStatus) {
+        log.debug("Get tasks by status: {}", taskStatus);
+        List<Task> foundTasks = taskRepository.findByTaskStatus(taskStatus);
+        return foundTasks.stream()
+                .map(task -> taskMapper.toDto(task))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Обновление задачи по ID.
+     *
+     * @param id
+     * @param taskDto
+     * @return
+     */
     public TaskDto update(Long id, TaskDto taskDto) {
         //Проверка существование записи по ID
         if (!taskRepository.existsById(id)) {
