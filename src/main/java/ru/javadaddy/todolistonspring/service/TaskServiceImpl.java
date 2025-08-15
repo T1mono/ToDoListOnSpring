@@ -65,44 +65,23 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskDto update(Long id, TaskDto taskDto) {
-        //Проверка существование записи по ID
-        if (!taskRepository.existsById(id)) {
-            log.error("Task record update by id: {} not exist", id);
-            throw new TaskNotFoundException("Запись с ID \"" + id + "\" не существует");
-        }
+// Находим существующую задачу
+        Task existingTask = taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Запись с ID \"" + id + "\" не существует"));
 
-        //Извлечение ID из DTO
-        final Long bodyId = taskDto.getId();
-        if (bodyId == null) {
-            taskDto.setId(id);
-        } else {
-            if (!id.equals(bodyId)) {
-                log.error("Record update by id: {} not compare: at URL id: URL id: {} record", id, bodyId);
-                throw new TaskNotFoundException("ID не совпадают с URL id записи \"" + id + "\", а в теле запроса id = \"" + bodyId + "\"");
-            }
-        }
+        log.debug("Updating task with id: {}", id);
 
-        //Логирование начала обновления
-        log.debug("Task start by updated record by id: {}", id);
+        // Обновляем поля существующей задачи
+        existingTask.setName(taskDto.getName());
+        existingTask.setDescription(taskDto.getDescription());
+        existingTask.setPeriodOfExecution(taskDto.getPeriodOfExecution());
+        existingTask.setTaskStatus(taskDto.getTaskStatus());
 
-        //Конвертация DTO в сущность
-        Task task = taskMapper.toEntity(taskDto);
+        // Сохраняем обновлённую задачу (merge произойдёт автоматически)
+        Task updatedTask = taskRepository.save(existingTask);
+        log.debug("Task updated successfully with id: {}", updatedTask.getId());
 
-        // Проверка, что конвертация прошла успешно
-        if (task == null) {
-            throw new RuntimeException("Ошибка преобразования DTO в сущность");
-        }
-
-        task.setName(taskDto.getName());
-        task.setDescription(taskDto.getDescription());
-        task.setPeriodOfExecution(taskDto.getPeriodOfExecution());
-        task.setTaskStatus(taskDto.getTaskStatus());
-
-        //Сохранение обновленной сущности
-        Task updateTask = taskRepository.save(task);
-        log.debug("Task updated successfully with id: {}", updateTask.getId());
-
-        return taskMapper.toDto(updateTask);
+        return taskMapper.toDto(updatedTask);
     }
 
     /**
@@ -135,22 +114,22 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskDto create(TaskDto taskDto) {
-        //Проверка входных данных
         if (taskDto == null) {
             throw new IllegalArgumentException("DTO задачи не может быть null");
         }
-        final Long taskDtoId = taskDto.getId();
-        //Проверка на существование ID
-        if (taskDtoId != null && taskRepository.existsById(taskDtoId)) {
-            log.error("Record task with id: {} exist", taskDtoId);
-            throw new RuntimeException("Запись с ID \"" + taskDtoId + "\" уже существует");
-        }
+
+        // Запрещаем передачу ID при создании
+//        if (taskDto.getId() != null) {
+//            throw new IllegalArgumentException("Нельзя указывать ID при создании новой задачи");
+//        }
+
         log.debug("Task start create record: {}", taskDto);
-        //Маппинг
+
         Task task = taskMapper.toEntity(taskDto);
         if (task == null) {
             throw new MappingException("Ошибка преобразования DTO в сущность");
         }
+
         final Task saved = taskRepository.save(task);
         return taskMapper.toDto(saved);
     }

@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 @Data
 public class TaskDto {
-    private Long id;
     private String name;
     private String description;
     private LocalDate periodOfExecution;

@@ -2,14 +2,10 @@ package ru.javadaddy.todolistonspring.contoller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,7 +40,7 @@ public class TaskController {
     }
 
 
-    @GetMapping("{/id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Получить задачу по ID")
     @ApiResponse(responseCode = "200", description = "Задача найдена")
     @ApiResponse(responseCode = "404", description = "Не найдена")
