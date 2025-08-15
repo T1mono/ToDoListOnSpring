@@ -30,3 +30,13 @@ logging:
 
 server:
   port: 8080
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs  # Путь для JSON-документации
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html  # Путь к Swagger UI
+    tags-sorter: alpha  # Сортировка тегов по алфавиту
+    operations-sorter: alpha  # Сортировка операций по алфавиту
