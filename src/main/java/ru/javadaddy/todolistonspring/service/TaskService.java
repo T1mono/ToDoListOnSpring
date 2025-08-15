@@ -46,7 +46,7 @@ public class TaskService {
      * @param taskStatus
      * @return
      */
-    public List<TaskDto> listByStatus(TaskStatus taskStatus) {
+    public List<TaskDto> filterByStatus(TaskStatus taskStatus) {
         log.debug("Get tasks by status: {}", taskStatus);
         List<Task> foundTasks = taskRepository.findByTaskStatus(taskStatus);
         return foundTasks.stream()
