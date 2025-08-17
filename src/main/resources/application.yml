@@ -15,6 +15,7 @@ spring:
       max-lifetime: 600000
 
 # Добавленные настройки для работы со статическими ресурсами
+
   web:
     resources:
       add-mappings: false
