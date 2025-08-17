@@ -20,5 +20,5 @@ public interface TaskService {
 
     List<TaskDto> listAll();
 
-    TavskDto getById(Long id);
+    TaskDto getById(Long id);
 }
