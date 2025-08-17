@@ -71,11 +71,7 @@ public class TaskServiceImpl implements TaskService {
 
         log.debug("Updating task with id: {}", id);
 
-        // Обновляем поля существующей задачи
-        existingTask.setName(taskDto.getName());
-        existingTask.setDescription(taskDto.getDescription());
-        existingTask.setPeriodOfExecution(taskDto.getPeriodOfExecution());
-        existingTask.setTaskStatus(taskDto.getTaskStatus());
+        taskMapper.updateEntityFromDto(taskDto, existingTask);
 
         // Сохраняем обновлённую задачу (merge произойдёт автоматически)
         Task updatedTask = taskRepository.save(existingTask);
@@ -117,11 +113,6 @@ public class TaskServiceImpl implements TaskService {
         if (taskDto == null) {
             throw new IllegalArgumentException("DTO задачи не может быть null");
         }
-
-        // Запрещаем передачу ID при создании
-//        if (taskDto.getId() != null) {
-//            throw new IllegalArgumentException("Нельзя указывать ID при создании новой задачи");
-//        }
 
         log.debug("Task start create record: {}", taskDto);
 
