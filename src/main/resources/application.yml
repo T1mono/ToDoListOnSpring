@@ -38,10 +38,9 @@ server:
 
 springdoc:
   api-docs:
-    enabled: true
-    path: /v3/api-docs  # Путь для JSON-документации
+    path: /v3/api-docs
   swagger-ui:
+    path: /swagger-ui.html
     enabled: true
-    path: /swagger-ui.html  # Путь к Swagger UI
-    tags-sorter: alpha  # Сортировка тегов по алфавиту
-    operations-sorter: alpha  # Сортировка операций по алфавиту
+    tags-sorter: alpha
+    operations-sorter: alpha
