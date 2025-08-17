@@ -29,6 +29,7 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * Сортировка задачи по статусу.
+     *
      * @return Возращает отсортированный список задач по статусу.
      */
     @Override
@@ -90,15 +91,12 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDto deleteById(Long id) {
         //Поиск сущности
-        final Optional<Task> foundById = taskRepository.findById(id);
+        Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(
+                "Запись с ID \"" + id + "\" не найдена"));
         log.debug("Task start by deleted record by id: {}", id);
-        if (foundById.isPresent()) {
-            taskRepository.deleteById(id);
-            log.debug("Task end by deleted record by id: {}", id);
-            return taskMapper.toDto(foundById.get());
-        } else {
-            return null;
-        }
+        taskRepository.delete(task);
+        log.debug("Task end by deleted record by id: {}", id);
+        return taskMapper.toDto(task);
     }
 
     /**
