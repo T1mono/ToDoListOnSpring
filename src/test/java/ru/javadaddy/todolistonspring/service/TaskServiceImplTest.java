@@ -9,10 +9,12 @@ import org.springframework.data.domain.Sort;
 import ru.javadaddy.todolistonspring.dto.TaskDto;
 import ru.javadaddy.todolistonspring.enums.TaskStatus;
 import ru.javadaddy.todolistonspring.exception.TaskNotFoundException;
+import ru.javadaddy.todolistonspring.factory.TaskTestFactory;
 import ru.javadaddy.todolistonspring.mapper.TaskMapper;
 import ru.javadaddy.todolistonspring.model.Task;
 import ru.javadaddy.todolistonspring.repostitory.TaskRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,19 +43,15 @@ class TaskServiceImplTest {
     @Test
     void sortByStatus_ShouldReturnSortedTasks() {
         // Arrange
-        Task task1 = new Task();
-        task1.setTaskStatus(TaskStatus.TODO);
-        Task task2 = new Task();
-        task2.setTaskStatus(TaskStatus.IN_PROGRESS);
-
+        Task task1 = TaskTestFactory.createTask(1L, "Task 1", "Desc 1", null, TaskStatus.TODO);
+        Task task2 = TaskTestFactory.createTask(2L, "Task 2", "Desc 2", null, TaskStatus.IN_PROGRESS);
         List<Task> tasks = List.of(task1, task2);
+
         when(taskRepository.findAll(Sort.by(Sort.Direction.ASC, "taskStatus")))
                 .thenReturn(tasks);
 
-        TaskDto dto1 = new TaskDto();
-        dto1.setTaskStatus(TaskStatus.TODO);
-        TaskDto dto2 = new TaskDto();
-        dto2.setTaskStatus(TaskStatus.IN_PROGRESS);
+        TaskDto dto1 = TaskTestFactory.createTaskDto(1L, "Task 1", "Desc 1", null, TaskStatus.TODO);
+        TaskDto dto2 = TaskTestFactory.createTaskDto(2L, "Task 2", "Desc 2", null, TaskStatus.IN_PROGRESS);
 
         when(taskMapper.toDto(task1)).thenReturn(dto1);
         when(taskMapper.toDto(task2)).thenReturn(dto2);
@@ -71,14 +69,12 @@ class TaskServiceImplTest {
     @Test
     void filterByStatus_ShouldReturnFilteredTasks() {
         // Arrange
-        Task task = new Task();
-        task.setTaskStatus(TaskStatus.TODO);
+        Task task = TaskTestFactory.createTask(1L, "Task 1", "Desc 1", null, TaskStatus.TODO);
 
         when(taskRepository.findByTaskStatus(TaskStatus.TODO))
                 .thenReturn(List.of(task));
 
-        TaskDto dto = new TaskDto();
-        dto.setTaskStatus(TaskStatus.TODO);
+        TaskDto dto = TaskTestFactory.createTaskDto(1L, "Task", "Description", null, TaskStatus.TODO);
 
         when(taskMapper.toDto(task)).thenReturn(dto);
 
@@ -95,29 +91,13 @@ class TaskServiceImplTest {
     void update() {
         // Arrange
         Long taskId = 1L;
+        LocalDate newDate = LocalDate.now().plusDays(5);
 
-        TaskDto inputDto = new TaskDto();
-        inputDto.setName("Updated Name");
-        inputDto.setDescription("Updated Description");
-        inputDto.setTaskStatus(TaskStatus.IN_PROGRESS);
 
-        Task existingTask = new Task();
-        existingTask.setId(taskId);
-        existingTask.setName("Old Name");
-        existingTask.setDescription("Old Description");
-        existingTask.setTaskStatus(TaskStatus.TODO);
-
-        Task updatedTask = new Task();
-        updatedTask.setId(taskId);
-        updatedTask.setName(inputDto.getName());
-        updatedTask.setDescription(inputDto.getDescription());
-        updatedTask.setTaskStatus(inputDto.getTaskStatus());
-
-        TaskDto expectedDto = new TaskDto();
-        expectedDto.setId(taskId);
-        expectedDto.setName(updatedTask.getName());
-        expectedDto.setDescription(updatedTask.getDescription());
-        expectedDto.setTaskStatus(updatedTask.getTaskStatus());
+        TaskDto inputDto = TaskTestFactory.createTaskDto(null, "Updated Name", "Updated Desc", newDate, TaskStatus.IN_PROGRESS);
+        Task existingTask = TaskTestFactory.createTask(taskId, "Old Name", "Old Desc", LocalDate.now(), TaskStatus.TODO);
+        Task updatedTask = TaskTestFactory.createTask(taskId, "Updated Name", "Updated Desc", newDate, TaskStatus.IN_PROGRESS);
+        TaskDto expectedDto = TaskTestFactory.createTaskDto(taskId, "Updated Name", "Updated Desc", newDate, TaskStatus.IN_PROGRESS);
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingTask));
         when(taskRepository.save(existingTask)).thenReturn(updatedTask);
@@ -139,15 +119,12 @@ class TaskServiceImplTest {
     void deleteById_ShouldDeleteTask() {
         // Arrange
         Long taskId = 1L;
-        Task task = new Task();
-        task.setId(taskId);
+        Task task = TaskTestFactory.createTask(taskId, "Task", "Description", null, TaskStatus.TODO);
 
         when(taskRepository.findById(taskId))
                 .thenReturn(Optional.of(task));
 
-        TaskDto expectedDto = new TaskDto();
-        expectedDto.setId(taskId);
-
+        TaskDto expectedDto = TaskTestFactory.createTaskDto(taskId, "Task", "Description", null, TaskStatus.TODO);
         when(taskMapper.toDto(task)).thenReturn(expectedDto);
 
         // Act
@@ -155,35 +132,18 @@ class TaskServiceImplTest {
 
         // Assert
         assertEquals(taskId, result.getId());
-        verify(taskRepository).deleteById(taskId);
+        verify(taskRepository).delete(task); // Изменили на delete(task)
     }
 
     @Test
     void create_ShouldCreateTask() {
         // Arrange
-        TaskDto inputDto = new TaskDto();
-        inputDto.setName("Test Task");
-        inputDto.setDescription("Test Description");
-        inputDto.setTaskStatus(TaskStatus.TODO);
+        TaskDto inputDto = TaskTestFactory.createTaskDto(null, "Test Task", "Test Description", null, TaskStatus.TODO);
 
-        Task entity = new Task();
-        entity.setName(inputDto.getName());
-        entity.setDescription(inputDto.getDescription());
-        entity.setTaskStatus(inputDto.getTaskStatus());
+        Task entity = TaskTestFactory.createTask(null, "Test Task", "Test Description", null, TaskStatus.TODO);
+        Task savedEntity = TaskTestFactory.createTask(1L, "Test Task", "Test Description", null, TaskStatus.TODO);
+        TaskDto expectedDto = TaskTestFactory.createTaskDto(1L, "Test Task", "Test Description", null, TaskStatus.TODO);
 
-        Task savedEntity = new Task();
-        savedEntity.setId(1L);
-        savedEntity.setName(entity.getName());
-        savedEntity.setDescription(entity.getDescription());
-        savedEntity.setTaskStatus(entity.getTaskStatus());
-
-        TaskDto expectedDto = new TaskDto();
-        expectedDto.setId(1L);
-        expectedDto.setName(savedEntity.getName());
-        expectedDto.setDescription(savedEntity.getDescription());
-        expectedDto.setTaskStatus(savedEntity.getTaskStatus());
-
-        // Используем any() для более гибкого сравнения
         when(taskMapper.toEntity(any(TaskDto.class))).thenReturn(entity);
         when(taskRepository.save(any(Task.class))).thenReturn(savedEntity);
         when(taskMapper.toDto(any(Task.class))).thenReturn(expectedDto);
@@ -205,14 +165,15 @@ class TaskServiceImplTest {
     @Test
     void listAll_ShouldReturnAllTasks() {
         // Arrange
-        Task task1 = new Task();
-        Task task2 = new Task();
+        Task task1 = TaskTestFactory.createTask(1L, "Task 1", "Desc 1", null, TaskStatus.TODO);
+        Task task2 = TaskTestFactory.createTask(2L, "Task 2", "Desc 2", null, TaskStatus.IN_PROGRESS);
 
         when(taskRepository.findAll())
                 .thenReturn(List.of(task1, task2));
 
-        TaskDto dto1 = new TaskDto();
-        TaskDto dto2 = new TaskDto();
+        TaskDto dto1 = TaskTestFactory.createTaskDto(1L, "Task 1", "Desc 1", null, TaskStatus.TODO);
+        TaskDto dto2 = TaskTestFactory.createTaskDto(2L, "Task 2", "Desc 2", null, TaskStatus.IN_PROGRESS);
+
 
         when(taskMapper.toDto(task1)).thenReturn(dto1);
         when(taskMapper.toDto(task2)).thenReturn(dto2);
@@ -229,14 +190,12 @@ class TaskServiceImplTest {
     void getById_ShouldReturnTask() {
         // Arrange
         Long taskId = 1L;
-        Task task = new Task();
-        task.setId(taskId);
+        Task task = TaskTestFactory.createTask(taskId, "Task", "Description", null, TaskStatus.TODO);
 
         when(taskRepository.findById(taskId))
                 .thenReturn(Optional.of(task));
 
-        TaskDto expectedDto = new TaskDto();
-        expectedDto.setId(taskId);
+        TaskDto expectedDto = TaskTestFactory.createTaskDto(taskId, "Task", "Description", null, TaskStatus.TODO);
 
         when(taskMapper.toDto(task)).thenReturn(expectedDto);
 
@@ -252,8 +211,6 @@ class TaskServiceImplTest {
     void getById_ShouldThrowWhenTaskNotFound() {
         // Arrange
         Long nonExistentId = 999L;
-        when(taskRepository.findById(nonExistentId))
-                .thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(TaskNotFoundException.class, () -> {
