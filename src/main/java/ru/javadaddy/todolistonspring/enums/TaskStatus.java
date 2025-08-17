@@ -2,6 +2,7 @@ package ru.javadaddy.todolistonspring.enums;
 
 public enum TaskStatus {
     TODO("К выполнению"),
+
     IN_PROGRESS("В процессе"),
 
     DONE("Завершено");

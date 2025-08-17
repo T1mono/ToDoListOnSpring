@@ -39,7 +39,6 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(taskService.create(taskDto));
     }
 
-
     @GetMapping("/{id}")
     @Operation(summary = "Получить задачу по ID")
     @ApiResponse(responseCode = "200", description = "Задача найдена")
